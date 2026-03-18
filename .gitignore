@@ -1,0 +1,68 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.pytest_cache/
+coverage.xml
+
+# Environments
+.env
+.venv
+env/
+venv/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# mypy
+.mypy_cache/
+
+# Ruff
+.ruff_cache/
+
+# IDE
+.idea/
+.vscode/
+
+# mkdocs
+/site
+
+# PyPI configuration
+.pypirc
+
+# ============================================================================
+# Project-specific
+# ============================================================================
+
+output/
+outputs/
+output_*/
+outputs_*/
+cache/
+logs/
+*_transcripts/
+evals/crescendo_transcripts/*
+
+# Runtime stats (updated on each eval run)
+.actorattack_stats.json
+.crescendo_stats.json
+.xteaming_stats.json
+
+# X-teaming local history state
+.x_teaming/
