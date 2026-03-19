@@ -2,6 +2,10 @@
 
 AJAR: Adaptive Jailbreak Architecture for Red-teaming
 
+AJAR is an adaptive jailbreak framework for LLM red-teaming, built on [Petri](https://github.com/safety-research/petri) and extended with the Model Context Protocol (MCP). It supports state rollback, tool simulation, and adaptive planning for multi-turn security evaluation in agentic scenarios.
+
+See **[Architecture & Workflow](docs/architecture.md)** for detailed design and diagrams.
+
 ## Setup
 
 ```bash
@@ -14,9 +18,9 @@ uv sync
 uv run evals/crescendo.py
 ```
 
-Jailbreak algorithms are implemented as [tools](src/ajar/tools) not MCP servers because Inspect tools support parallel evaluation natively.
+Jailbreak algorithms are implemented as [tools](src/ajar/tools) and MCP servers. The tools support parallel evaluation natively; MCP servers do not. We recommend using the [tools](src/ajar/tools) for evaluation.
 
-Support Crescendo, ActorAttack and X-Teaming.
+Supported algorithms: Crescendo, ActorAttack, X-Teaming.
 
 ## Responsible use
 
