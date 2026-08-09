@@ -20,6 +20,8 @@ uv run evals/crescendo.py
 
 Jailbreak algorithms live under [`servers/`](servers) (Crescendo, ActorAttack, X-Teaming) as MCP 2.0 handlers. Evals use an Inspect `store_as` bridge ([`evals/bridges/`](evals/bridges)): the auditor only sees plain tools without a `state` argument; the bridge injects/persists state around each handler call. Orchestration uses stock `inspect_petri`.
 
+Because Petri now exposes [`Controller.resolve_id()`](https://github.com/meridianlabs-ai/inspect_petri/pull/123) ([PR #123](https://github.com/meridianlabs-ai/inspect_petri/pull/123)), bridge `evaluate` takes a short message id from `resume` (e.g. `evaluate(message_id="M8")`) and looks up the exact Target reply in Petri's conversation state instead of asking the auditor to copy the full response into tool arguments. That cuts copy/truncation errors and saves auditor output tokens; `resume` still shows the Target reply in context as usual.
+
 ## Paper artifact
 
 The code corresponding to the AJAR paper ([arXiv:2601.10971](https://arxiv.org/abs/2601.10971), last revised 19 Mar 2026, **v2**) is preserved on the branch [`release/ajar-arxiv-2601.10971-v2`](https://github.com/douyipu/ajar/tree/release/ajar-arxiv-2601.10971-v2).
@@ -61,7 +63,7 @@ If you use Ajar in your research, please cite:
 
 ## Acknowledgments
 
-This project depends on [inspect_petri](https://github.com/meridianlabs-ai/inspect_petri) (Petri 3, git `main`) and [inspect_ai](https://github.com/UKGovernmentBEIS/inspect_ai) (0.3.252+, with MCP 2.0 support).
+This project depends on [inspect_petri](https://github.com/meridianlabs-ai/inspect_petri) (Petri 3, git `main`) and [inspect_ai](https://github.com/UKGovernmentBEIS/inspect_ai) (0.3.252+, with MCP 2.0 support). The message-id evaluate path above relies on Petri [PR #123](https://github.com/meridianlabs-ai/inspect_petri/pull/123) (`Controller.resolve_id`).
 
 ## License
 

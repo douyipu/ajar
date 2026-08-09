@@ -1,8 +1,11 @@
 """Smoke tests for Petri 3 + store_as bridge wiring."""
 
-from inspect_ai.tool import ToolDef
+import pytest
+from inspect_ai.model import ChatMessageAssistant, ChatMessageUser
+from inspect_ai.tool import ToolDef, ToolError
 from inspect_petri import audit_solver, auditor_agent, auditor_tools, target_agent
 
+from evals.bridges._base import strip_think_tags, target_response_from_messages
 from evals.bridges.crescendo import INSTRUCTIONS, crescendo_bridge_tools
 from evals.common import build_ajar_dataset, make_audit_task
 from evals.prompts import AJAR_SYSTEM_MESSAGE, AJAR_USER_MESSAGE
@@ -26,8 +29,37 @@ def test_bridge_tools_hide_state_param():
         names[td.name] = list((td.parameters.properties or {}).keys())
     assert "state" not in names["initialize"]
     assert names["generate_question"] == []
-    assert names["evaluate"] == ["target_response"]
+    assert names["evaluate"] == ["message_id"]
     assert names["get_status"] == []
+
+
+def test_strip_think_tags():
+    assert (
+        strip_think_tags("<think>secret</think>\nVisible answer")
+        == "Visible answer"
+    )
+
+
+def test_target_response_from_messages_lookup():
+    messages = [
+        ChatMessageUser(content="hi", id="u1"),
+        ChatMessageAssistant(
+            content="<think>plan</think>\nHello there",
+            id="a1",
+        ),
+    ]
+    assert target_response_from_messages(messages, "a1") == "Hello there"
+
+
+def test_target_response_from_messages_rejects_non_assistant():
+    messages = [ChatMessageUser(content="hi", id="u1")]
+    with pytest.raises(ToolError):
+        target_response_from_messages(messages, "u1", display_id="M1")
+
+
+def test_target_response_from_messages_unknown_id():
+    with pytest.raises(ToolError):
+        target_response_from_messages([], "missing", display_id="M9")
 
 
 def test_build_ajar_dataset_metadata():
@@ -88,3 +120,7 @@ def test_bridge_instructions_hide_state_from_auditor():
         "do not manage attack state" in INSTRUCTIONS.lower()
     )
     assert "verbatim" not in INSTRUCTIONS.lower()
+    assert 'evaluate(message_id=' in INSTRUCTIONS
+    assert "do **not** copy/paste" in INSTRUCTIONS.lower() or (
+        "do not copy/paste" in INSTRUCTIONS.lower()
+    )

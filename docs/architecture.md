@@ -70,7 +70,7 @@ AJAR separates **attack planning** from **attack implementation**. The Auditor A
 
 ### Explicit state management
 
-Conversation state is treated as a first-class object. Petri tracks the auditor/target dialogue (including rollback). Strategy attack state is held in Inspect `store_as` per sample; bridge tools inject that state into the underlying MCP handlers and return only plain-text results to the Auditor.
+Conversation state is treated as a first-class object. Petri tracks the auditor/target dialogue (including rollback). Strategy attack state is held in Inspect `store_as` per sample; bridge tools inject that state into the underlying MCP handlers and return only plain-text results to the Auditor. Bridge `evaluate` accepts a Petri short message id (e.g. `M8`) and uses `controller().resolve_id` to look up the exact Target reply text before calling the MCP handler — the Auditor does not re-copy response bodies into tool arguments.
 
 ### Safe action simulation
 
