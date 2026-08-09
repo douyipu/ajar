@@ -2,14 +2,14 @@
 
 AJAR: Adaptive Jailbreak Architecture for Red-teaming
 
-AJAR is an adaptive jailbreak framework for LLM red-teaming, built on [Petri](https://github.com/safety-research/petri) and extended with the Model Context Protocol (MCP). It supports state rollback, tool simulation, and adaptive planning for multi-turn security evaluation in agentic scenarios.
+AJAR is an adaptive jailbreak framework for LLM red-teaming, built on [inspect_petri](https://github.com/meridianlabs-ai/inspect_petri) (Petri 3) and extended with the Model Context Protocol (MCP). It supports state rollback, tool simulation, and adaptive planning for multi-turn security evaluation in agentic scenarios.
 
 See **[Architecture & Workflow](docs/architecture.md)** for detailed design and diagrams.
 
 ## Setup
 
 ```bash
-uv sync
+uv sync --extra dev
 ```
 
 ## Run eval
@@ -18,9 +18,17 @@ uv sync
 uv run evals/crescendo.py
 ```
 
-Jailbreak algorithms are implemented as [tools](src/ajar/tools) and MCP servers. The tools support parallel evaluation natively; MCP servers do not. We recommend using the [tools](src/ajar/tools) for evaluation.
+Jailbreak algorithms live under [`servers/`](servers) (Crescendo, ActorAttack, X-Teaming) as MCP 2.0 handlers. Evals use an Inspect `store_as` bridge ([`evals/bridges/`](evals/bridges)): the auditor only sees plain tools without a `state` argument; the bridge injects/persists state around each handler call. Orchestration uses stock `inspect_petri`.
 
-Supported algorithms: Crescendo, ActorAttack, X-Teaming.
+## Paper artifact
+
+The code corresponding to the AJAR paper ([arXiv:2601.10971](https://arxiv.org/abs/2601.10971), last revised 19 Mar 2026, **v2**) is preserved on the branch [`release/ajar-arxiv-2601.10971-v2`](https://github.com/douyipu/ajar/tree/release/ajar-arxiv-2601.10971-v2).
+
+```bash
+git checkout release/ajar-arxiv-2601.10971-v2
+```
+
+`main` continues active development (including the current MCP 2.0 / Petri 3 refactor) and may diverge from the paper artifact.
 
 ## Responsible use
 
@@ -53,7 +61,7 @@ If you use Ajar in your research, please cite:
 
 ## Acknowledgments
 
-This project is developed based on [Petri](https://github.com/safety-research/petri) v2.0.0.
+This project depends on [inspect_petri](https://github.com/meridianlabs-ai/inspect_petri) (Petri 3, git `main`) and [inspect_ai](https://github.com/UKGovernmentBEIS/inspect_ai) (0.3.252+, with MCP 2.0 support).
 
 ## License
 

@@ -41,17 +41,17 @@ Its responsibilities include:
 
 Rather than acting as a fixed script runner, the Auditor Agent orchestrates a search over possible attack trajectories.
 
-### 2. MCP Strategy Server
+### 2. MCP Strategy Servers
 
-The **MCP Strategy Server** exposes jailbreak methods as standardized tools. Instead of embedding each method as a monolithic script, AJAR packages them behind a common interface so the Auditor Agent can call them on demand.
+Each jailbreak method is a standalone **MCP 2.0 server** under `servers/` (stdio). Servers are **stateless**: they do not keep session files or process-local attack state. At the raw MCP boundary, every tool response is a JSON envelope `{"result": "...", "state": {...}}`, and the MCP client returns the latest `state` on the next call. AJAR evals place an Inspect `store_as` bridge in front of this boundary, so the bridge—not the Auditor Agent—persists and injects that state; the Auditor only sees plain-text tool results.
 
 Examples include:
 
-- **Crescendo** for progressive multi-turn escalation,
-- **ActorAttack** for role- and actor-based semantic indirection,
-- **X-Teaming** for planner-style adaptive attack generation.
+- **Crescendo** (`python -m servers.crescendo`) for progressive multi-turn escalation,
+- **ActorAttack** (`python -m servers.actorattack`) for role- and actor-based semantic indirection,
+- **X-Teaming** (`python -m servers.x_teaming`) for planner-style adaptive attack generation.
 
-This keeps the framework extensible: new algorithms can be added without changing the Auditor Agent's control logic.
+This keeps the framework extensible: new algorithms can be added without changing the Auditor Agent's control logic. Orchestration uses stock `inspect_petri`; evals expose attack tools through an Inspect `store_as` bridge (`evals/bridges/`) so the auditor never carries `state`.
 
 ### 3. Target Environment
 
@@ -70,7 +70,7 @@ AJAR separates **attack planning** from **attack implementation**. The Auditor A
 
 ### Explicit state management
 
-Conversation state is treated as a first-class object. AJAR tracks committed history, failed branches, rollback points, and progress signals such as dialogue depth and score trend.
+Conversation state is treated as a first-class object. Petri tracks the auditor/target dialogue (including rollback). Strategy attack state is held in Inspect `store_as` per sample; bridge tools inject that state into the underlying MCP handlers and return only plain-text results to the Auditor.
 
 ### Safe action simulation
 

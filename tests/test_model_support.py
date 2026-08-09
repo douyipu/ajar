@@ -46,8 +46,10 @@ def _tools() -> Tuple[ToolDef, ToolDef, ToolDef]:
 
 @pytest.fixture(scope="session")
 def model(request) -> Model:
-    # Prefer CLI flag --model; otherwise fallback to tests/model_id.txt
+    # Live probes: require explicit --model (e.g. openai/gpt-4o)
     model_id: str | None = request.config.getoption("--model")
+    if not model_id:
+        pytest.skip("Pass --model <id> to run live model support probes")
     return get_model(model_id)
 
 
